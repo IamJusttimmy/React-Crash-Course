@@ -1,71 +1,55 @@
 import { useState, useEffect } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+
+import MovieCard from "./MovieCard";
+
 import "./App.css";
+import SearchIcon from "./search.svg";
 
-/*
-///////////////////////////////
-// component and prop
-// For multiple elements
-const Person = (props) => {
-  return (
-    <>
-      <h1>Name: {props.name}</h1>
-      <h2>Last Name: {props.lastName}</h2>
-      <h2>Age: {props.age}</h2>
-    </>
-  );
-};
-
-// for few elements
-const Person2 = ({ name, lastName, age }) => {
-  return (
-    <>
-      <h1>Name: {name}</h1>
-      <h2>Last Name: {lastName}</h2>
-      <h2>Age: {age}</h2>
-    </>
-  );
-};
+const API_URL = "http://www.omdbapi.com?apikey=5020d60a";
 
 const App = () => {
-  return (
-    <div className="App">
-      <Person 
-      name="Timmy" 
-      lastName="Feds" 
-      age={15 + 15} 
-      />
-      
-      <Person2 
-      name="Micheal" 
-      lastName="Dave" 
-      age={29} 
-      />
-    </div>
-  );
-};
-*/
+  const [movies, setMovies] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
-/////////////////////////////////
-//React State and Effect
+  const searchMovies = async (title) => {
+    const response = await fetch(`${API_URL}&s=${title}`);
+    const data = await response.json();
 
-const App = () => {
-  const [counter, setCounter] = useState(0);
+    setMovies(data.Search);
+  };
 
   useEffect(() => {
-    alert(`You've Changed the Counter to ${counter}`);
-  }, [counter]);
+    searchMovies("Spiderman");
+  }, []);
 
   return (
-    <div className="App">
-      <button onClick={() => setCounter((prevCount) => prevCount - 1)}>
-        -
-      </button>
-      <h1>{counter}</h1>
-      <button onClick={() => setCounter((prevCount) => prevCount + 1)}>
-        +
-      </button>
+    <div className="app">
+      <h1>MovieLand</h1>
+
+      <div className="search">
+        <input
+          placeholder="Search for movies"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <img
+          src={SearchIcon}
+          alt="search"
+          onClick={() => searchMovies(searchTerm)}
+        />
+      </div>
+
+      {movies?.length > 0 ? (
+        <div className="container">
+          {movies.map((movie) => (
+            <MovieCard movie={movie} />
+          ))}
+        </div>
+      ) : (
+        <div className="empty">
+          <h2>No Movies Found</h2>
+        </div>
+      )}
     </div>
   );
 };
